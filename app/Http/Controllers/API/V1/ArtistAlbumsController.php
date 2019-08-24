@@ -28,7 +28,7 @@ class ArtistAlbumsController extends Controller
             return response()->json(['error' => 'artist not found'], 404);
         }
 
-        $albums = $this->service->searchArtistAlbums($artist['id']);
+        $albums = $this->service->searchArtistAlbums($artist->id);
 
         // Format response
 
