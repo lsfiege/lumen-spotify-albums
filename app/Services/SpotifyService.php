@@ -39,7 +39,9 @@ class SpotifyService implements SpotifyContract
             ],
         ]);
 
-        return json_decode($response->getBody()->getContents());
+        $tokenObject = json_decode($response->getBody()->getContents());
+
+        return $tokenObject->access_token;
     }
 
     private function getEncodedCredentials()
@@ -51,36 +53,38 @@ class SpotifyService implements SpotifyContract
         return base64_encode("{$clientID}:{$clientSecret}");
     }
 
-    public function searchArtist($artist, $allResults = false)
+    /**
+     * @param $artist
+     *
+     * @return array
+     */
+    public function searchArtist($artist)
     {
         $response = $this->client->get("/{$this->version}/search?q={$artist}&type=artist", [
             'headers' => [
                 'Accept' => 'application/json',
                 'Content-Type' => 'application/json',
-                'Authorization' => "Bearer {$this->token->access_token}",
+                'Authorization' => "Bearer {$this->token}",
             ],
         ]);
 
         $data = json_decode($response->getBody()->getContents());
 
-        if (count($data->artists->items) === 0) {
-            return null;
-        }
-
-        if ($allResults) {
-            return $data->artists->items;
-        }
-
-        return $data->artists->items[0];
+        return $data->artists->items;
     }
 
+    /**
+     * @param $artistID
+     *
+     * @return array
+     */
     public function searchArtistAlbums($artistID)
     {
         $response = $this->client->get("/{$this->version}/artists/{$artistID}/albums", [
             'headers' => [
                 'Accept' => 'application/json',
                 'Content-Type' => 'application/json',
-                'Authorization' => "Bearer {$this->token->access_token}",
+                'Authorization' => "Bearer {$this->token}",
             ],
         ]);
 
