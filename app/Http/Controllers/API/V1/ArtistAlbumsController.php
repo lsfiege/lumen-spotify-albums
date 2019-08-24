@@ -30,8 +30,24 @@ class ArtistAlbumsController extends Controller
 
         $albums = $this->service->searchArtistAlbums($artist->id);
 
-        // Format response
+        $albums = $this->formatAlbumsResponse($albums);
 
         return response()->json($albums);
+    }
+
+    private function formatAlbumsResponse($albums)
+    {
+        $albums = collect($albums);
+
+        $response = $albums->map(function ($album) {
+            return [
+                'name' => $album->name,
+                'released' => $album->release_date,
+                'tracks' => $album->total_tracks,
+                'cover' => $album->images[0],
+            ];
+        });
+
+        return $response;
     }
 }
