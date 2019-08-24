@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__.'/../vendor/autoload.php';
+require_once __DIR__ . '/../vendor/autoload.php';
 
 (new Laravel\Lumen\Bootstrap\LoadEnvironmentVariables(
     dirname(__DIR__)
@@ -45,6 +45,11 @@ $app->singleton(
     Illuminate\Contracts\Console\Kernel::class,
     App\Console\Kernel::class
 );
+
+/*$app->singleton(
+    App\Contracts\SpotifyContract::class,
+    App\Services\SpotifyService::class
+);*/
 
 /*
 |--------------------------------------------------------------------------
@@ -94,7 +99,14 @@ $app->singleton(
 $app->router->group([
     'namespace' => 'App\Http\Controllers',
 ], function ($router) {
-    require __DIR__.'/../routes/web.php';
+    require __DIR__ . '/../routes/web.php';
+});
+
+$app->router->group([
+    'prefix' => 'api/v1',
+    'namespace' => 'App\Http\Controllers\API\V1',
+], function ($router) {
+    require __DIR__ . '/../routes/api/v1.php';
 });
 
 return $app;
