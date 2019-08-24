@@ -3,15 +3,15 @@
 namespace App\Http\Controllers\API\V1;
 
 use App\Http\Controllers\Controller;
+use App\Services\SpotifyContract;
 use App\Services\SpotifyService;
 use Illuminate\Http\Request;
 
 class ArtistAlbumsController extends Controller
 {
-    /** @var SpotifyService */
     private $service;
 
-    public function __construct(SpotifyService $service)
+    public function __construct(SpotifyContract $service)
     {
         $this->service = $service;
     }

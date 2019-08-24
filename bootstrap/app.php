@@ -46,6 +46,11 @@ $app->singleton(
     App\Console\Kernel::class
 );
 
+$app->singleton(
+    App\Services\SpotifyContract::class,
+    App\Services\SpotifyService::class
+);
+
 /*
 |--------------------------------------------------------------------------
 | Register Middleware

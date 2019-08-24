@@ -4,9 +4,13 @@ namespace App\Services;
 
 use GuzzleHttp\Client;
 
-class SpotifyService
+class SpotifyService implements SpotifyContract
 {
-    private $authenticator;
+    private $authURL = 'https://accounts.spotify.com';
+
+    private $baseURL = 'https://api.spotify.com';
+
+    private $version = 'v1';
 
     private $token;
 
@@ -14,13 +18,18 @@ class SpotifyService
 
     public function __construct()
     {
-        $clientID = env('SPOTIFY_CLIENT_ID');
-        $clientSecret = env('SPOTIFY_CLIENT_SECRET');
-        $credentials = base64_encode("{$clientID}:{$clientSecret}");
+        $this->token = $this->getToken();
 
-        $this->authenticator = new Client(['base_uri' => 'https://accounts.spotify.com']);
+        $this->client = new Client(['base_uri' => $this->baseURL]);
+    }
 
-        $response = $this->authenticator->request('POST', '/api/token', [
+    private function getToken()
+    {
+        $credentials = $this->getEncodedCredentials();
+
+        $authenticator = new Client(['base_uri' => $this->authURL]);
+
+        $response = $authenticator->request('POST', '/api/token', [
             'headers' => [
                 'Authorization' => "Basic {$credentials}",
                 'Content-Type' => 'application/x-www-form-urlencoded',
@@ -30,14 +39,21 @@ class SpotifyService
             ],
         ]);
 
-        $this->token = json_decode($response->getBody()->getContents());
+        return json_decode($response->getBody()->getContents());
+    }
 
-        $this->client = new Client(['base_uri' => 'https://api.spotify.com']);
+    private function getEncodedCredentials()
+    {
+        $clientID = env('SPOTIFY_CLIENT_ID');
+
+        $clientSecret = env('SPOTIFY_CLIENT_SECRET');
+
+        return base64_encode("{$clientID}:{$clientSecret}");
     }
 
     public function searchArtist($artist, $allResults = false)
     {
-        $response = $this->client->get("/v1/search?q={$artist}&type=artist", [
+        $response = $this->client->get("/{$this->version}/search?q={$artist}&type=artist", [
             'headers' => [
                 'Accept' => 'application/json',
                 'Content-Type' => 'application/json',
@@ -60,7 +76,7 @@ class SpotifyService
 
     public function searchArtistAlbums($artistID)
     {
-        $response = $this->client->get("/v1/artists/{$artistID}/albums", [
+        $response = $this->client->get("/{$this->version}/artists/{$artistID}/albums", [
             'headers' => [
                 'Accept' => 'application/json',
                 'Content-Type' => 'application/json',
