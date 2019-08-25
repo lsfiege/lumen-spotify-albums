@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use Spotify\Exceptions\ArtistNotFoundException;
+
 class FakeSpotifyService implements SpotifyContract
 {
     public $artist;
@@ -22,7 +24,7 @@ class FakeSpotifyService implements SpotifyContract
     public function searchArtist($artist)
     {
         if ($this->artist[0]->name !== $artist) {
-            return null;
+            throw new ArtistNotFoundException('artist not found');
         }
 
         return $this->artist;
@@ -30,12 +32,16 @@ class FakeSpotifyService implements SpotifyContract
 
     public function searchArtistAlbums($artistID)
     {
+        if ($this->artist[0]->id !== $artistID) {
+            return null;
+        }
+
         return $this->albums;
     }
 
     public function firstArtist()
     {
-        return $this->artist;
+        return $this->artist[0];
     }
 }
 
