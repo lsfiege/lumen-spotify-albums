@@ -2,48 +2,41 @@
 
 namespace App\Services;
 
-use GuzzleHttp\Client;
-use Spotify\Authenticator;
+use Illuminate\Support\Arr;
+use Spotify\Client;
+use Spotify\Exceptions\ArtistNotFoundException;
 
 class SpotifyService implements SpotifyContract
 {
-    private $baseURL = 'https://api.spotify.com';
-
-    private $version = 'v1';
-
-    private $broker;
-
-    private $token;
-
     private $client;
+
+    private $artists;
+
+    private $albums;
 
     public function __construct()
     {
-        $this->broker = new Authenticator();
-
-        $this->token = $this->broker->getToken();
-
-        $this->client = new Client(['base_uri' => $this->baseURL]);
+        $this->client = new Client();
     }
 
     /**
      * @param $artist
      *
      * @return array
+     *
+     * @throws ArtistNotFoundException
      */
     public function searchArtist($artist)
     {
-        $response = $this->client->get("/{$this->version}/search?q={$artist}&type=artist", [
-            'headers' => [
-                'Accept' => 'application/json',
-                'Content-Type' => 'application/json',
-                'Authorization' => "Bearer {$this->token}",
-            ],
-        ]);
+        $data = $this->client->searchArtist($artist);
 
-        $data = json_decode($response->getBody()->getContents());
+        if (empty($data->artists->items)) {
+            throw new ArtistNotFoundException('artist not found');
+        }
 
-        return $data->artists->items;
+        $this->artists = $data->artists->items;
+
+        return $this->artists;
     }
 
     /**
@@ -53,16 +46,18 @@ class SpotifyService implements SpotifyContract
      */
     public function searchArtistAlbums($artistID)
     {
-        $response = $this->client->get("/{$this->version}/artists/{$artistID}/albums", [
-            'headers' => [
-                'Accept' => 'application/json',
-                'Content-Type' => 'application/json',
-                'Authorization' => "Bearer {$this->token}",
-            ],
-        ]);
+        $data = $this->client->searchArtistAlbums($artistID);
 
-        $data = json_decode($response->getBody()->getContents());
+        $this->albums = $data->items;
 
-        return $data->items;
+        return $this->albums;
+    }
+
+    /**
+     * @return \stdClass
+     */
+    public function firstArtist()
+    {
+        return Arr::first($this->artists);
     }
 }

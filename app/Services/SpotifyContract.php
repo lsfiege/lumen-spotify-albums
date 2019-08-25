@@ -17,4 +17,9 @@ interface SpotifyContract
      * @return array
      */
     public function searchArtistAlbums($artistID);
+
+    /**
+     * @return \stdClass
+     */
+    public function firstArtist();
 }

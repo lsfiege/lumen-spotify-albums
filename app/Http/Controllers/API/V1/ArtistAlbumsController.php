@@ -5,7 +5,6 @@ namespace App\Http\Controllers\API\V1;
 use App\Http\Controllers\Controller;
 use App\Services\SpotifyContract;
 use Illuminate\Http\Request;
-use Illuminate\Support\Arr;
 
 class ArtistAlbumsController extends Controller
 {
@@ -22,13 +21,13 @@ class ArtistAlbumsController extends Controller
             'q' => 'required|string',
         ]);
 
-        $artists = $this->service->searchArtist($request->get('q'));
-
-        if (empty($artists)) {
-            return response()->json(['error' => 'artist not found'], 404);
+        try {
+            $this->service->searchArtist($request->get('q'));
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 404);
         }
 
-        $artist = Arr::first($artists);
+        $artist = $this->service->firstArtist();
 
         $albums = $this->service->searchArtistAlbums($artist->id);
 

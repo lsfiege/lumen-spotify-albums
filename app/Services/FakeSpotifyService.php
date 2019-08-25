@@ -32,6 +32,11 @@ class FakeSpotifyService implements SpotifyContract
     {
         return $this->albums;
     }
+
+    public function firstArtist()
+    {
+        return $this->artist;
+    }
 }
 
 class FakeArtist
