@@ -2,9 +2,9 @@
 
 namespace App\Services;
 
-use Illuminate\Support\Arr;
-use Spotify\Client;
+use App\Clients\Spotify\Client;
 use App\Exceptions\ArtistNotFoundException;
+use Illuminate\Support\Arr;
 
 class SpotifyService implements SpotifyContract
 {

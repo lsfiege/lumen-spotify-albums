@@ -1,6 +1,6 @@
 <?php
 
-namespace Spotify;
+namespace App\Clients\Spotify;
 
 use Carbon\Carbon;
 use GuzzleHttp\Client;
