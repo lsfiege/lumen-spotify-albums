@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use Spotify\Exceptions\ArtistNotFoundException;
+use App\Exceptions\ArtistNotFoundException;
 
 class FakeSpotifyService implements SpotifyContract
 {

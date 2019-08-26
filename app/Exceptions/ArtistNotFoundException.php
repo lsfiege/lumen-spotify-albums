@@ -1,6 +1,6 @@
 <?php
 
-namespace Spotify\Exceptions;
+namespace App\Exceptions;
 
 class ArtistNotFoundException extends \Exception
 {
