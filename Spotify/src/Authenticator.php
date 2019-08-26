@@ -4,6 +4,7 @@ namespace Spotify;
 
 use Carbon\Carbon;
 use GuzzleHttp\Client;
+use Illuminate\Support\Facades\Cache;
 
 class Authenticator
 {
@@ -12,7 +13,26 @@ class Authenticator
     private $token;
 
     /** @var Carbon */
-    private $lastUse;
+    private $tokenExpiration;
+
+    public function __construct()
+    {
+        $this->retrieveCache();
+    }
+
+    private function getEncodedCredentials()
+    {
+        $clientID = env('SPOTIFY_CLIENT_ID');
+
+        $clientSecret = env('SPOTIFY_CLIENT_SECRET');
+
+        return base64_encode("{$clientID}:{$clientSecret}");
+    }
+
+    private function getNewTokenExpiration()
+    {
+        return Carbon::now()->addSeconds($this->token->expires_in);
+    }
 
     public function getToken()
     {
@@ -21,23 +41,6 @@ class Authenticator
         }
 
         return $this->token->access_token;
-    }
-
-    public function tokenHasExpired()
-    {
-        if (is_null($this->token)) {
-            return true;
-        }
-
-        $seconds = Carbon::createFromFormat('s', $this->token->expires_in);
-
-        $now = Carbon::now();
-
-        if ($now->isAfter($this->lastUse->add($seconds))) {
-            return true;
-        }
-
-        return false;
     }
 
     public function getValidToken()
@@ -58,15 +61,39 @@ class Authenticator
 
         $this->token = json_decode($response->getBody()->getContents());
 
-        $this->lastUse = Carbon::now();
+        $this->tokenExpiration = $this->getNewTokenExpiration();
+
+        $this->refreshCache();
     }
 
-    private function getEncodedCredentials()
+    private function refreshCache()
     {
-        $clientID = env('SPOTIFY_CLIENT_ID');
+        $seconds = $this->token->expires_in;
 
-        $clientSecret = env('SPOTIFY_CLIENT_SECRET');
+        Cache::add('token', $this->token, $seconds);
 
-        return base64_encode("{$clientID}:{$clientSecret}");
+        Cache::add('tokenExpiration', $this->tokenExpiration, $seconds);
+    }
+
+    private function retrieveCache()
+    {
+        $this->token = Cache::get('token');
+
+        $this->tokenExpiration = Cache::get('tokenExpiration');
+    }
+
+    public function tokenHasExpired()
+    {
+        if (is_null($this->token)) {
+            return true;
+        }
+
+        $now = Carbon::now();
+
+        if ($now->isAfter($this->tokenExpiration)) {
+            return true;
+        }
+
+        return false;
     }
 }
