@@ -34,39 +34,39 @@ curl -X GET \
 ```
 
 ```json
-[
-  {
-    "name": "Revelations",
-    "released": "2006-09-05",
-    "tracks": 13,
-    "cover": {
-      "height": 636,
-      "url": "https://i.scdn.co/image/709b4d9163f432823ee9c8afe7e8795d9e08b4f5",
-      "width": 640
-    }
-  },
-  {
-    "name": "Revelations",
-    "released": "2006-09-01",
-    "tracks": 13,
-    "cover": {
-      "height": 636,
-      "url": "https://i.scdn.co/image/709b4d9163f432823ee9c8afe7e8795d9e08b4f5",
-      "width": 640
-    }
-  },
-
-  ...
-
-  {
-    "name": "Doesn't Remind Me",
-    "released": "2005-01-01",
-    "tracks": 2,
-    "cover": {
-      "height": 586,
-      "url": "https://i.scdn.co/image/363cbe3b0d982d7d813ae8197d1964afc9f847ee",
-      "width": 640
-    }
-  }
-]
+{
+    "data": [
+        {
+            "name": "Revelations",
+            "released": "2006-09-05",
+            "tracks": 13,
+            "cover": {
+                "height": 640,
+                "url": "https://i.scdn.co/image/ab67616d0000b2734c4ee2bf4293fb52f78726af",
+                "width": 640
+            }
+        },
+        {
+            "name": "Revelations",
+            "released": "2006-09-01",
+            "tracks": 13,
+            "cover": {
+                "height": 640,
+                "url": "https://i.scdn.co/image/ab67616d0000b2737e03b018aae3c7b2ec7ebfc7",
+                "width": 640
+            }
+        },
+        {
+            "name": "Revelations",
+            "released": "2006-08-30",
+            "tracks": 13,
+            "cover": {
+                "height": 640,
+                "url": "https://i.scdn.co/image/ab67616d0000b2734786e26a684e491124f77ee7",
+                "width": 640
+            }
+        },
+        ...
+    ]
+}
 ```
