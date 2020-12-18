@@ -19,12 +19,12 @@ class ArtistAlbumsController extends Controller
 
     public function get(Request $request)
     {
-        $this->validate($request, [
+        $data = $this->validate($request, [
             'q' => 'required|string',
         ]);
 
         try {
-            $this->service->searchArtist($request->get('q'));
+            $this->service->searchArtist($data['q']);
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }
