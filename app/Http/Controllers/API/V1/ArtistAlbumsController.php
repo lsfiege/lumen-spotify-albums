@@ -24,6 +24,7 @@ class ArtistAlbumsController extends Controller
         try {
             $this->service->searchArtist($request->get('q'));
         } catch (\Exception $e) {
+            // TODO: unify response formats into base API controller
             return response()->json(['error' => $e->getMessage()], 404);
         }
 
@@ -31,6 +32,7 @@ class ArtistAlbumsController extends Controller
 
         $albums = $this->service->searchArtistAlbums($artist->id);
 
+        // TODO: Replace by using JsonResource
         $albums = $this->formatAlbumsResponse($albums);
 
         return response()->json($albums);
