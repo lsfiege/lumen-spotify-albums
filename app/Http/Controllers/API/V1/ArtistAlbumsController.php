@@ -3,11 +3,13 @@
 namespace App\Http\Controllers\API\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\AlbumResource;
 use App\Services\SpotifyContract;
 use Illuminate\Http\Request;
 
 class ArtistAlbumsController extends Controller
 {
+    /** @var SpotifyContract */
     private $service;
 
     public function __construct(SpotifyContract $service)
@@ -24,42 +26,13 @@ class ArtistAlbumsController extends Controller
         try {
             $this->service->searchArtist($request->get('q'));
         } catch (\Exception $e) {
-            // TODO: unify response formats into base API controller
-            return response()->json(['error' => $e->getMessage()], 404);
+            return $this->errorResponse($e->getMessage(), $e->getCode());
         }
 
         $artist = $this->service->firstArtist();
 
         $albums = $this->service->searchArtistAlbums($artist->id);
 
-        // TODO: Replace by using JsonResource
-        $albums = $this->formatAlbumsResponse($albums);
-
-        return response()->json($albums);
-    }
-
-    /**
-     * @param array $albums
-     *
-     * @return array|\Illuminate\Support\Collection
-     */
-    private function formatAlbumsResponse(array $albums)
-    {
-        if (empty($albums)) {
-            return $albums;
-        }
-
-        $albums = collect($albums);
-
-        $response = $albums->map(function ($album) {
-            return [
-                'name' => $album->name,
-                'released' => $album->release_date,
-                'tracks' => $album->total_tracks,
-                'cover' => $album->images[0],
-            ];
-        });
-
-        return $response;
+        return AlbumResource::collection($albums);
     }
 }
